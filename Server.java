@@ -4,23 +4,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-/*
-class ServerConnection implements Runnable{
-	Socket s;
-	BufferedReader in;
-	public ServerConnection(Socket s){
-		this.s = s;
 
-		in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-	}
 
-	public void run(){
-		String msg = in.readLine();
-		System.out.println(msg);
-	}
-
-}
-*/
 class ClientHandler implements Runnable {
 	public String name;
 	public Socket s;
@@ -35,6 +20,7 @@ class ClientHandler implements Runnable {
 
 			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
 			out = new PrintWriter(s.getOutputStream(), true);
+			sendToAll(this.name + " has joined the Chat.");
 	}
 
 	public void run(){
@@ -51,9 +37,7 @@ class ClientHandler implements Runnable {
 
 	public void sendToAll(String msg){
 		for(ClientHandler client: this.clients){
-			//if(client.equals(this.s)){
 				client.out.println(msg);
-			//}
 		}
 	}
 }
@@ -79,5 +63,7 @@ class Server {
 
 			pool.execute(client);
 		}
+
+		ss.close();
 	}
 }
