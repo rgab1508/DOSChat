@@ -64,6 +64,5 @@ class Server {
 			pool.execute(client);
 		}
 
-		ss.close();
 	}
 }
