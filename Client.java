@@ -35,7 +35,7 @@ class ServerConnection implements Runnable{
 
 
 class Client {
-	private static String ADDR = "182.237.177.251";
+	private static String ADDR = "127.0.0.1";
 	private static int PORT;
 	private static String name;
 

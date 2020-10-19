@@ -53,16 +53,24 @@ class Server {
 		ServerSocket ss = new ServerSocket(PORT);
 	
 		// s is Client Socket
-		while (true){
-			Socket s = ss.accept();
-			BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));	
-			String name = in.readLine();
-			ClientHandler client = new ClientHandler(s, name, clients);
-			clients.add(client);
-			System.out.println(name + " has connected.");
+		try {
+			while (true){
+				Socket s = ss.accept();
+				BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));	
+				String name = in.readLine();
+				ClientHandler client = new ClientHandler(s, name, clients);
+				clients.add(client);
+				System.out.println(name + " has connected.");
 
-			pool.execute(client);
+				pool.execute(client);
+			}
 		}
-
+		
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		finally{
+			ss.close();
+		}
 	}
 }
