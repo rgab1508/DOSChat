@@ -1,4 +1,5 @@
 jrun.py
 *.class
 *.dex
+*.zip
 oat/
