@@ -28,7 +28,30 @@ class ClientHandler implements Runnable {
 			while(true){
 			
 				String msg = in.readLine();
-				sendToAll(this.name +"> " + msg);
+				if(msg.startsWith("..")){
+					//Server commands
+					String cmd = msg.substring(2);
+					switch(cmd){
+						case "list":
+							out.println("-------Users Online(" + this.clients.size() + ")-------");
+							for(ClientHandler client: this.clients){
+								out.println(">>> " + client.name);
+							}
+							break;
+
+						case "exit":
+							out.println("Exiting...");
+							sendToAll(this.name + " has left the chat");
+							break;
+
+						default:
+							out.println("No command named: " + cmd);
+
+					}
+				}
+				else{
+					sendToAll(this.name +"> " + msg);
+				}
 			}
 		}catch(IOException e){
 			e.printStackTrace();

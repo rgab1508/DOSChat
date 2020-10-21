@@ -13,7 +13,7 @@ class ServerConnection implements Runnable{
     try {
       while(true){                                                            
 				String msg = in.readLine();
-        if(!msg.equals("null") && !msg.startsWith(this.name)){
+        if(msg != null && !msg.startsWith(this.name)){
 					System.out.println(msg);
         }
       }
@@ -67,13 +67,14 @@ class Client {
 		new Thread(in).start();
 		System.out.println(".exit to quit chat");
 		System.out.println(name + "> ");
+
+		String msg = "";
 		
-		while(true){
-			String msg = keyboard.readLine();
-			if(msg.equals(".exit")) break;
+		while(!msg.equals("..exit")){
+			msg = keyboard.readLine();
 			out.println(msg);
 		}
-		//closing rhe socket
+		//closing the socket
 		out.close();
 		s.close();
 	}
