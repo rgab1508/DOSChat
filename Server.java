@@ -2,19 +2,22 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 class ClientHandler implements Runnable {
 	public String name;
+	public UUID id;
 	public Socket s;
 	public BufferedReader in;
 	public PrintWriter out;
 	public ArrayList<ClientHandler> clients = new ArrayList<>();
 
-	public ClientHandler(Socket s, String name, ArrayList<ClientHandler> clients) throws IOException{
+	public ClientHandler(Socket s, UUID id, String name, ArrayList<ClientHandler> clients) throws IOException{
 		this.name =  name;
+		this.id = id;
 		this.s = s;
 		this.clients = clients;
 
@@ -81,7 +84,8 @@ class Server {
 				Socket s = ss.accept();
 				BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));	
 				String name = in.readLine();
-				ClientHandler client = new ClientHandler(s, name, clients);
+				UUID id =  UUID.randomUUID();
+				ClientHandler client = new ClientHandler(s, id, name, clients);
 				clients.add(client);
 				System.out.println(name + " has connected.");
 
