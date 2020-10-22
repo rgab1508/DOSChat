@@ -2,6 +2,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,9 +14,9 @@ class ClientHandler implements Runnable {
 	public Socket s;
 	public BufferedReader in;
 	public PrintWriter out;
-	public ArrayList<ClientHandler> clients = new ArrayList<>();
+	private static HashMap<UUID, ClientHandler> clients = new HashMap<UUID, ClientHandler>();
 
-	public ClientHandler(Socket s, UUID id, String name, ArrayList<ClientHandler> clients) throws IOException{
+	public ClientHandler(Socket s, UUID id, String name, HashMap<UUID, ClientHandler> clients) throws IOException{
 		this.name =  name;
 		this.id = id;
 		this.s = s;
@@ -37,18 +38,19 @@ class ClientHandler implements Runnable {
 					switch(cmd){
 						case "list":
 							out.println("-------Users Online(" + this.clients.size() + ")-------");
-							for(ClientHandler client: this.clients){
-								out.println(">>> " + client.name);
+							for(ClientHandler client: clients.values()){
+								out.println(">>> " + client.name +"#"+ client.id);
 							}
 							break;
 
 						case "exit":
 							out.println("Exiting...");
+							clients.remove(this.id);
 							sendToAll(this.name + " has left the chat");
 							break;
 
 						default:
-							out.println("No command named: " + cmd);
+							out.println("SERVER>>>No command named: " + cmd);
 
 					}
 				}
@@ -62,7 +64,7 @@ class ClientHandler implements Runnable {
 	}
 
 	public void sendToAll(String msg){
-		for(ClientHandler client: this.clients){
+		for(ClientHandler client: clients.values()){
 				client.out.println(msg);
 		}
 	}
@@ -70,7 +72,7 @@ class ClientHandler implements Runnable {
 
 class Server {
 	private static int PORT = 9001;
-	private static ArrayList<ClientHandler> clients = new ArrayList<>();
+	private static HashMap<UUID, ClientHandler> clients = new HashMap<UUID, ClientHandler>();
 	private static ExecutorService pool = Executors.newFixedThreadPool(10);
 	
 	public static void main(String args[]) throws IOException {
@@ -86,8 +88,8 @@ class Server {
 				String name = in.readLine();
 				UUID id =  UUID.randomUUID();
 				ClientHandler client = new ClientHandler(s, id, name, clients);
-				clients.add(client);
-				System.out.println(name + " has connected.");
+				clients.put(id, client);
+				System.out.println(name +"#"+id+ " has connected.");
 
 				pool.execute(client);
 			}
