@@ -65,7 +65,7 @@ class Client {
 		out.println(name);
 		
 		new Thread(in).start();
-		System.out.println(".exit to quit chat");
+		System.out.println("type ..help to see all commands");
 		System.out.println(name + "> ");
 
 		String msg = "";

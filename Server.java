@@ -1,7 +1,6 @@
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -16,15 +15,16 @@ class ClientHandler implements Runnable {
 	public PrintWriter out;
 	private static HashMap<UUID, ClientHandler> clients = new HashMap<UUID, ClientHandler>();
 
-	public ClientHandler(Socket s, UUID id, String name, HashMap<UUID, ClientHandler> clients) throws IOException{
+	public ClientHandler(Socket s, UUID id, String name, HashMap<UUID, ClientHandler> c) throws IOException{
 		this.name =  name;
 		this.id = id;
 		this.s = s;
-		this.clients = clients;
+		clients = c;
 
-			in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			out = new PrintWriter(s.getOutputStream(), true);
-			sendToAll(this.name + " has joined the Chat.");
+		in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		out = new PrintWriter(s.getOutputStream(), true);
+		
+		sendToAll(this.name + " has joined the Chat.");
 	}
 
 	public void run(){
@@ -36,10 +36,17 @@ class ClientHandler implements Runnable {
 					//Server commands
 					String cmd = msg.substring(2);
 					switch(cmd){
+						case "help":
+							out.println("All commands starts with '..'");
+							out.println("Commands\t\tDesc");
+							out.println("list\t\tTo list all the online users");
+							out.println("exit\t\tTo exit the chat");
+							out.println("help\t\tTo show this message");
+							break;
 						case "list":
-							out.println("-------Users Online(" + this.clients.size() + ")-------");
+							out.println("-------Users Online(" + clients.size() + ")-------");
 							for(ClientHandler client: clients.values()){
-								out.println(">>> " + client.name +"#"+ client.id);
+								out.println(">>> " + client.name +"#"+ client.id.toString().substring(30));
 							}
 							break;
 
